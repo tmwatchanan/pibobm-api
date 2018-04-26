@@ -1,0 +1,33 @@
+{
+  "name": "pibobm-api",
+  "version": "1.0.0",
+  "description": "Person Identification Based on Body Movement RESTful API",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tmwatchanan/pibobm-api.git"
+  },
+  "author": "Watchanan Chantapakul",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tmwatchanan/pibobm-api/issues"
+  },
+  "homepage": "https://github.com/tmwatchanan/pibobm-api#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cheerio": "^1.0.0-rc.2",
+    "cors": "^2.8.4",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.2",
+    "moment": "^2.22.1",
+    "mongoose": "^5.0.1",
+    "morgan": "^1.9.0",
+    "request": "^2.83.0"
+  },
+  "engines": {
+    "node": "8.9.1"
+  }
+}
