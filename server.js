@@ -33,7 +33,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.use(morgan('dev'));
-app.listen(app.get('port'), () => {
+app.listen(port, () => {
     console.log('Listening requests on port ' + port);
 });
 
@@ -46,16 +46,39 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 // ---------------------------------------------------------------------------------------------
 
-app.post('/send-realtime', function (req, res) {
-    var dateTimeString = moment(req.body.timestamp).format("DD-MM-YYYY HH:mm:ss");
-    console.log("[" + dateTimeString + "][frame:" + req.body.frame +"][kinect:" + req.body.kinect + "] " + req.body.string);
-    MainController.gotTestData(req, res);
+app.get('/', function (req, res) {
     return res.json({
-        server: "OK"
+        endpoint: "/"
     });
 });
 
-app.listen(port, function () {
-    console.log('Listening requests on port ' + port);
+
+app.post('/send-realtime', function (req, res) {
+    // var dateTimeString = moment(req.body.timestamp).format("DD-MM-YYYY HH:mm:ss");
+    console.log("[" + Date.now() + "] received data from kinect " + req.body.kinect);
+    MainController.AddRealtimeData(req, res);
+    // return res.json({
+    //     endpoint: "/send-realtime",
+    //     data: req.body
+    // });
 });
+
+app.get('/get-realtime/:second/:millisecond', function (req, res) {
+    console.log("[" + Date.now() + "] get data at " + req.params.second + "." + req.params.millisecond + " from all 3 kinects");
+    MainController.RetrieveRealtimeData(req, res);
+    // return res.json({
+    //     endpoint: "/get-realtime",
+    // });
+});
+
+app.post('/mock-realtime', function (req, res) {
+    // var dateTimeString = moment(req.body.timestamp).format("DD-MM-YYYY HH:mm:ss");
+    console.log("[" + Date.now() + "] mock data.");
+    MainController.MockRealtimeData(req, res);
+    // return res.json({
+    //     endpoint: "/send-realtime",
+    //     data: req.body
+    // });
+});
+
 exports = module.exports = app;
