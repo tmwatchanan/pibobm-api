@@ -4,6 +4,7 @@ var request = require('request');
 var cheerio = require('cheerio');
 var app = express();
 var moment = require('moment');
+var csv = require("csvtojson");
 
 const bodyParser = require('body-parser'); // handling HTML body
 var morgan = require('morgan'); // logging
@@ -63,9 +64,18 @@ app.post('/send-realtime', function (req, res) {
     // });
 });
 
-app.get('/get-realtime/:second/:millisecond', function (req, res) {
-    console.log("[" + Date.now() + "] get data at " + req.params.second + "." + req.params.millisecond + " from all 3 kinects");
-    MainController.RetrieveRealtimeData(req, res);
+app.get('/get-realtime/:second/:millisecond/:filename', function (req, res) {
+    console.log("[" + Date.now() + "] get data at " + req.params.second + "." + req.params.millisecond + " from all 3 kinects with " + req.params.filename);
+    csv({
+        noheader: true,
+        headers: ['no', 'name', 'status', 'string']
+    })
+        .fromFile("./data/" + req.params.filename + ".csv")
+        .on("end_parsed", function (stringPrototypes) {
+            // console.log(stringPrototypes);
+            // return res.json(stringPrototypes);
+            MainController.RetrieveRealtimeData(req, res, stringPrototypes);
+        });
     // return res.json({
     //     endpoint: "/get-realtime",
     // });
@@ -79,6 +89,19 @@ app.post('/mock-realtime', function (req, res) {
     //     endpoint: "/send-realtime",
     //     data: req.body
     // });
+});
+
+app.get('/csv-to-json/:filename', function (req, res) {
+    console.log("[" + Date.now() + "] convert " + req.params.filename + ".csv to json.");
+    csv({
+        noheader: true,
+        headers: ['no', 'name', 'status', 'string']
+    })
+        .fromFile("./data/" + req.params.filename + ".csv")
+        .on("end_parsed", function (jsonArrayObj) {
+            // console.log(jsonArrayObj);
+            return res.json(jsonArrayObj);
+        });
 });
 
 exports = module.exports = app;

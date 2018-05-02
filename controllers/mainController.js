@@ -1,5 +1,8 @@
 var mongoose = require('mongoose');
 var TestData = require('../models/test-data');
+var csv = require("csvtojson");
+var _ = require("underscore");
+_.mixin(require("argminmax"));  
 
 exports.MockRealtimeData = function (req, res) {
     let testString = req.body.string;
@@ -26,16 +29,16 @@ exports.MockRealtimeData = function (req, res) {
             "millisecond": req.body.millisecond,
             "kinect": kinect + 1
         },
-        update = {
-            "$set": {
-                "sequence": testList
-            }
-        },
-        options = {
-            upsert: true,
-            new: true,
-            setDefaultsOnInsert: true
-        };
+            update = {
+                "$set": {
+                    "sequence": testList
+                }
+            },
+            options = {
+                upsert: true,
+                new: true,
+                setDefaultsOnInsert: true
+            };
 
         TestData.findOneAndUpdate(query, update, options,
             function (err, doc) {
@@ -103,6 +106,9 @@ function levenshtein_distance(a, b) {
     if (a.length == 0) return b.length;
     if (b.length == 0) return a.length;
 
+    a = a.match(/.{1,2}/g)
+    b = b.match(/.{1,2}/g)
+
     var matrix = [];
 
     // increment along the first column of each row
@@ -132,7 +138,10 @@ function levenshtein_distance(a, b) {
     return matrix[b.length][a.length];
 }
 
-exports.RetrieveRealtimeData = function (req, res) {
+exports.RetrieveRealtimeData = function (req, res, stringPrototypes) {
+
+    // console.log(stringPrototypes);
+    // return res.json(stringPrototypes);
     TestData.find({
         'second': req.params.second,
         'millisecond': req.params.millisecond
@@ -151,12 +160,29 @@ exports.RetrieveRealtimeData = function (req, res) {
                     walkSequence.push(docs[k].sequence[f].symbol);
                 }
             }
-            return res.json({
-                status: true,
-                string: walkSequence.join(""),
-                sequence: walkSequence
-            });
+            // return res.json({
+            //     status: true,
+            //     string: walkSequence.join(""),
+            //     sequence: walkSequence
+            // });
             // return res.json(sortedDocs);
+
+            let predicts = [];
+            let testString = walkSequence.join("");
+            let distances = [];
+            stringPrototypes.forEach(prototype => {
+                distances.push(levenshtein_distance(testString, prototype.string));
+            });
+            for (let i = 0; i < 5; i++) {
+                let idx = _.argmin(distances);
+                let result = {
+                    name: stringPrototypes[idx].name,
+                    distance: distances[idx]
+                };
+                predicts.push(result);
+                distances[idx] = 1000;
+            }
+            return res.json(predicts);
         }
     });
 };

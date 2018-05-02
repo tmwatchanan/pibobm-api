@@ -17,15 +17,18 @@
   },
   "homepage": "https://github.com/tmwatchanan/pibobm-api#readme",
   "dependencies": {
+    "argminmax": "^0.1.1",
     "body-parser": "^1.18.2",
     "cheerio": "^1.0.0-rc.2",
     "cors": "^2.8.4",
+    "csvtojson": "^1.1.9",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "moment": "^2.22.1",
     "mongoose": "^5.0.1",
     "morgan": "^1.9.0",
-    "request": "^2.83.0"
+    "request": "^2.83.0",
+    "underscore": "^1.9.0"
   },
   "engines": {
     "node": "8.9.1"
