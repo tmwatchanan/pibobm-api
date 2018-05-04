@@ -64,7 +64,7 @@ exports.MockRealtimeData = function (req, res) {
 
 exports.AddRealtimeData = function (req, res) {
 
-    console.log(req.body.sequence);
+    console.log(req.body);
 
     var query = {
         "second": req.body.second,
