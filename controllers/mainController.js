@@ -182,6 +182,7 @@ exports.RetrieveRealtimeData = function (req, res, stringPrototypes) {
                 predicts.push(result);
                 distances[idx] = 1000;
             }
+            console.log(predicts);
             return res.json(predicts);
         }
     });
